@@ -10,6 +10,8 @@ import requests
 
 import sqlite3
 
+from zj_project.settings import cwd
+
 image_dir = 'image_dir'
 
 
@@ -105,8 +107,9 @@ class Sqlite3Pipeline(object):
                                                                 ','.join(item.fields.keys()),
                                                                 ','.join(['?'] * len(item.fields.keys())))
         args_list = [item[k] for k in item.fields.keys()]
-        self.cur.execute(insert_sql, args_list)
-        self.conn.commit()
+        if not cwd.startswith('/root/crawlab_workspace'):
+            self.cur.execute(insert_sql, args_list)
+            self.conn.commit()
         spider.logger.info("spider.current_url %s", spider.current_url)
         with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
             old_lines = {line.strip() for line in f.readlines()}

@@ -6,6 +6,9 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+
+cwd = os.getcwd()
 
 BOT_NAME = "zj_project"
 
@@ -83,10 +86,14 @@ HTTPERROR_ALLOWED_CODES = [406]#上面报的是403，就把403加入。
 SQLITE_FILE = 'zjspider.db'
 # SQLITE_TABLE = 'airline'
 ITEM_PIPELINES = {
-   "zj_project.pipelines.ZjProjectPipeline": 300,
-   'zj_project.pipelines.Sqlite3Pipeline': 400,
-   'zj_project.pipelines.SaveAirlineImage': 350,
+      "zj_project.pipelines.ZjProjectPipeline": 300,
+      'zj_project.pipelines.Sqlite3Pipeline': 400,
+      'zj_project.pipelines.SaveAirlineImage': 350,
 }
+
+if cwd.startswith('/root/crawlab_workspace'):
+   # run by scrapy
+   ITEM_PIPELINES['crawlab.scrapy.pipelines.CrawlabPipeline'] = 888
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
