@@ -1,0 +1,5 @@
+/image_dir/
+
+/build/
+venv
+/project.egg-info/
