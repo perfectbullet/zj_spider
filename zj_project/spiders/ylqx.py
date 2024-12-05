@@ -6,14 +6,18 @@ class YlqxSpider(scrapy.Spider):
     name = "ylqx"
     allowed_domains = ["ylqx.qgyyzs.net"]
     start_urls = ["https://ylqx.qgyyzs.net/zs/list_0_0_0_{}.htm".format(i) for i in range(1, 2754, 1)]
+    current_url = ""
     # 去掉爬取过的
-    with open('ylqx_crawled_urls.txt', mode='rt', encoding='utf8') as f:
+    with open('ylqx_crawled_urls.txt', mode='a+', encoding='utf8') as f:
+        old_lines = [line.strip() for line in f.readlines()]
+
         readed_urls = {u for u in f.readline()}
         start_urls = list(set(start_urls).difference(readed_urls))
+        if old_lines:
+            start_urls.insert(0, old_lines[-1])
 
     def parse(self, response: Response):
-        with open('ylqx_crawled_urls.txt', mode='at', encoding='utf8') as f:
-            f.write(response.url + '\n')
+        self.current_url = response.url
         divList = response.xpath('//div[@class="r_list"]')
         for idx, div in enumerate(divList, start=1):
             print('idx is {}'.format(idx))

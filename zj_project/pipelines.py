@@ -107,5 +107,9 @@ class Sqlite3Pipeline(object):
         args_list = [item[k] for k in item.fields.keys()]
         self.cur.execute(insert_sql, args_list)
         self.conn.commit()
-
+        spider.logger.info("spider.current_url %s", spider.current_url)
+        with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
+            old_lines = {line.strip() for line in f.readlines()}
+            if spider.current_url not in old_lines:
+                f.write(spider.current_url + '\n')
         return item

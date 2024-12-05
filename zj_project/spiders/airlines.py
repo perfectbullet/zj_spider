@@ -11,13 +11,12 @@ class AirlinesSpider(scrapy.Spider):
     start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 13000)]
     # 去掉爬取过的
 
-    with open(crawled_cache, mode='rt', encoding='utf8') as f:
+    with open(crawled_cache, mode='a+', encoding='utf8') as f:
         readed_urls = {u for u in f.readline()}
         start_urls = list(set(start_urls).difference(readed_urls))
 
     def parse(self, response):
-        with open(self.crawled_cache, mode='at', encoding='utf8') as f:
-            f.write(response.url + '\n')
+
         # //	从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置（取子孙节点）。
         divList = response.xpath('//div[@class="ps-v2-results-display-detail-col photo even" or @class="ps-v2-results-display-detail-col photo odd"]/div ')
         print(len(divList))

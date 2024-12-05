@@ -45,3 +45,12 @@ AUTOTHROTTLE_MAX_DELAY = 60
 AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 #设置下裁之后的自动延迟
 DOWNLOAD_DELAY = 3
+
+# 项目git
+git@github.com:perfectbullet/zj_spider.git
+
+# 项目启动
+(base) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$ python3.10 -m venv venv
+(base) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$ source venv/bin/activate
+(venv) (base) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$ conda deactivate
+(venv) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$
