@@ -16,6 +16,12 @@ class YlqxSpider(scrapy.Spider):
         if old_lines:
             start_urls.insert(0, old_lines[-1])
 
+    def start_requests(self):
+        HTTP_PROXY = 'http://171.248.52.22:8080'  # 替换为你的代理IP
+
+        for url in self.start_urls:
+            yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
+
     def parse(self, response: Response):
         self.current_url = response.url
         divList = response.xpath('//div[@class="r_list"]')
