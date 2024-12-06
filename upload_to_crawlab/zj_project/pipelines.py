@@ -123,6 +123,7 @@ class MongodbPipeline(object):
     def __init__(self, mongo_host, mongo_port, mongo_user, mongo_psw, mongo_db):
         self.client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
         self.db = self.client[mongo_db]  # 获得数据库的句柄
+        self.count_pages = 0
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -135,10 +136,10 @@ class MongodbPipeline(object):
         )
 
     def open_spider(self, spider):
-        spider.logger.info("open spider, spider.current_url %s", spider.current_url)
+        spider.logger.info("open spider")
 
     def close_spider(self, spider):
-        spider.logger.info("close spider, spider.current_url %s", spider.current_url)
+        spider.logger.info("close spider")
 
     def process_item(self, item, spider):
         # 保存爬取过的页面，去重
@@ -146,4 +147,5 @@ class MongodbPipeline(object):
         one_obj: Dict|None = coll.find_one(filter={'ulr': spider.current_url})
         if not one_obj:
             coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
+            self.count_pages
         return item

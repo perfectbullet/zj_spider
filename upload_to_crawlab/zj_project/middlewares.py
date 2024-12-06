@@ -27,7 +27,6 @@ class ZjProjectSpiderMiddleware:
         mongo_psw = crawler.settings.get('MONGO_PSW')
         mongo_db = crawler.settings.get('MONGO_DB')
 
-
         s.mongo_client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
         s.mongo_db = s.mongo_client[mongo_db]  # 获得数据库的句柄
         logging.getLogger('pymongo').setLevel(logging.INFO)
