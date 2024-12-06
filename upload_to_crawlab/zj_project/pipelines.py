@@ -119,9 +119,11 @@ class Sqlite3Pipeline(object):
 
 
 class MongodbPipeline(object):
+
     def __init__(self, mongo_host, mongo_port, mongo_user, mongo_psw, mongo_db):
         self.client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
         self.db = self.client[mongo_db]  # 获得数据库的句柄
+
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
@@ -133,10 +135,10 @@ class MongodbPipeline(object):
         )
 
     def open_spider(self, spider):
-        spider.logger.info("open spider")
+        spider.logger.info("open spider, spider.current_url %s", spider.current_url)
 
     def close_spider(self, spider):
-        spider.logger.info("close spider")
+        spider.logger.info("close spider, spider.current_url %s", spider.current_url)
 
     def process_item(self, item, spider):
         # 保存爬取过的页面，去重

@@ -131,3 +131,14 @@ else:
 MONGO_DB = "zjspider"  # 库名
 MONGO_USER = "gx" #用户名
 MONGO_PSW = "gx301213" #用户密码
+
+# 在setting中设置退出条件
+# CLOSESPIDER_TIMEOUT  # 指定时间退出
+# CLOSESPIDER_ITEMCOUNT  # 生成了指定数量的item
+CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
+# CLOSESPIDER_ERRORCOUNT  # 在发生指定数量的错误
+
+# 打开EXTENSIONS扩展
+EXTENSIONS = {
+   'scrapy.extensions.closespider.CloseSpider': 500,
+}
