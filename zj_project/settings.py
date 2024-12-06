@@ -90,7 +90,6 @@ ITEM_PIPELINES = {
     # 'zj_project.pipelines.Sqlite3Pipeline': 400,
     # 'zj_project.pipelines.SaveAirlineImage': 350,
     'zj_project.pipelines.MongodbPipeline': 350,
-
 }
 
 if cwd.startswith('/root/crawlab_workspace'):
@@ -123,8 +122,12 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # mongodb配置
-MONGO_HOST = "127.0.0.1"  # 主机IP
-MONGO_PORT = 17017  # 端口号
+if cwd.startswith('/root/crawlab_workspace'):
+    MONGO_HOST = "mongo"  # 主机IP
+    MONGO_PORT = 27017  # 端口号
+else:
+    MONGO_HOST = "127.0.0.1"  # 主机IP
+    MONGO_PORT = 17017  # 端口号
 MONGO_DB = "zjspider"  # 库名
 MONGO_USER = "gx" #用户名
 MONGO_PSW = "gx301213" #用户密码
