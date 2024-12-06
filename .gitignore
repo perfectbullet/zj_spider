@@ -4,3 +4,22 @@
 venv
 /project.egg-info/
 
+.ipynb_checkpoints
+# Python compiled files
+*__pycache__/*
+*.pyc
+
+# Vagrant files
+/.idea/
+
+# Python build files
+*.egg-info
+
+# Development Databases
+*.sqlite*
+/example.db
+/examplev2.db
+/setup_backup.py
+/test_save_image.py
+/test_sqlite.py
+/ylqx_log.log
