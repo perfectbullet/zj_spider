@@ -3,6 +3,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import os
+from typing import Dict
 
 import requests
 # useful for handling different item types with a single interface
@@ -19,8 +20,7 @@ settings = get_project_settings()
 
 class ZjProjectPipeline:
     def process_item(self, item, spider):
-        print('ZjProjectPipeline item {}'.format(item))
-
+        # print('ZjProjectPipeline item {}'.format(item))
         return item
 
 
@@ -57,11 +57,6 @@ class Sqlite3Pipeline(object):
     def __init__(self, sqlite_file, sqlite_table):
         self.sqlite_file = sqlite_file
         self.sqlite_table = sqlite_table
-
-        # 数据库登录需要帐号密码的话
-        self.client = pymongo.MongoClient(host=settings['MONGO_HOST'], port=settings['MONGO_PORT'], username=settings['MONGO_USER'], password=settings['MONGO_PSW'])
-        self.db = self.client[settings['MONGO_DB']]  # 获得数据库的句柄
-        self.coll = self.db[settings['MONGO_COLL_WEIBO']]  # 获得collection的句柄
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -114,15 +109,41 @@ class Sqlite3Pipeline(object):
                                                                 ','.join(item.fields.keys()),
                                                                 ','.join(['?'] * len(item.fields.keys())))
         args_list = [item[k] for k in item.fields.keys()]
-        # if not cwd.startswith('/root/crawlab_workspace'):
-        #     self.cur.execute(insert_sql, args_list)
-        #     self.conn.commit()
-        #
-        #     with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
-        #         old_lines = {line.strip() for line in f.readlines()}
-        #         if spider.current_url not in old_lines:
-        #             f.write(spider.current_url + '\n')
-        # else:
-        coll = self.db[settings['MONGO_COLL_WEIBO']]  # 获得collection的句柄
-        coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
+        self.cur.execute(insert_sql, args_list)
+        self.conn.commit()
+        with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
+            old_lines = {line.strip() for line in f.readlines()}
+            if spider.current_url not in old_lines:
+                f.write(spider.current_url + '\n')
+        return item
+
+
+class MongodbPipeline(object):
+
+    def __init__(self, mongo_host, mongo_port, mongo_user, mongo_psw, mongo_db):
+        self.client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
+        self.db = self.client[mongo_db]  # 获得数据库的句柄
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            mongo_host=crawler.settings.get('MONGO_HOST'),  # 从 settings.py 提取
+            mongo_port=crawler.settings.get('MONGO_PORT'),
+            mongo_user=crawler.settings.get('MONGO_USER'), # 数据库登录需要帐号密码的话
+            mongo_psw=crawler.settings.get('MONGO_PSW'),
+            mongo_db=crawler.settings.get('MONGO_DB'),
+        )
+
+    def open_spider(self, spider):
+        spider.logger.info("open spider, spider.current_url %s", spider.current_url)
+
+    def close_spider(self, spider):
+        spider.logger.info("close spider, spider.current_url %s", spider.current_url)
+
+    def process_item(self, item, spider):
+        # 保存爬取过的页面，去重
+        coll = self.db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
+        one_obj: Dict|None = coll.find_one(filter={'ulr': spider.current_url})
+        if not one_obj:
+            coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
         return item

@@ -63,9 +63,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    "zj_project.middlewares.ZjProjectSpiderMiddleware": 543,
-#}
+SPIDER_MIDDLEWARES = {
+   "zj_project.middlewares.ZjProjectSpiderMiddleware": 543,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
@@ -86,9 +86,11 @@ HTTPERROR_ALLOWED_CODES = [406]#上面报的是403，就把403加入。
 SQLITE_FILE = 'zjspider.db'
 # SQLITE_TABLE = 'airline'
 ITEM_PIPELINES = {
-      "zj_project.pipelines.ZjProjectPipeline": 300,
-      'zj_project.pipelines.Sqlite3Pipeline': 400,
-      'zj_project.pipelines.SaveAirlineImage': 350,
+    "zj_project.pipelines.ZjProjectPipeline": 300,
+    # 'zj_project.pipelines.Sqlite3Pipeline': 400,
+    # 'zj_project.pipelines.SaveAirlineImage': 350,
+    'zj_project.pipelines.MongodbPipeline': 350,
+
 }
 
 if cwd.startswith('/root/crawlab_workspace'):
@@ -124,6 +126,5 @@ FEED_EXPORT_ENCODING = "utf-8"
 MONGO_HOST = "127.0.0.1"  # 主机IP
 MONGO_PORT = 17017  # 端口号
 MONGO_DB = "zjspider"  # 库名
-MONGO_COLL_WEIBO = "zjspider_settings"  # collection名
 MONGO_USER = "gx" #用户名
 MONGO_PSW = "gx301213" #用户密码

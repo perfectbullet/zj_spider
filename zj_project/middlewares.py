@@ -2,11 +2,15 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
+from typing import Dict
+import logging
+import pymongo
 from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+from scrapy.http import HtmlResponse, Response
+
 
 class ZjProjectSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
@@ -17,6 +21,16 @@ class ZjProjectSpiderMiddleware:
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         s = cls()
+        mongo_host = crawler.settings.get('MONGO_HOST')  # 从 settings.py 提取
+        mongo_port = crawler.settings.get('MONGO_PORT')
+        mongo_user = crawler.settings.get('MONGO_USER')  # 数据库登录需要帐号密码的话
+        mongo_psw = crawler.settings.get('MONGO_PSW')
+        mongo_db = crawler.settings.get('MONGO_DB')
+
+
+        s.mongo_client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
+        s.mongo_db = s.mongo_client[mongo_db]  # 获得数据库的句柄
+        logging.getLogger('pymongo').setLevel(logging.INFO)
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
@@ -46,13 +60,22 @@ class ZjProjectSpiderMiddleware:
         # Called with the start requests of the spider, and works
         # similarly to the process_spider_output() method, except
         # that it doesn’t have a response associated.
+        coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
 
-        # Must return only requests (not items).
         for r in start_requests:
-            yield r
+            one_obj: Dict | None = coll.find_one(filter={'ulr': r.url})
+            if not one_obj:
+                yield r
+            else:
+                spider.logger.info("request.url %s, have been crawled", r.url)
+                continue
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class TimeoutException:
+    pass
 
 
 class ZjProjectDownloaderMiddleware:
@@ -60,10 +83,21 @@ class ZjProjectDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    def __init__(self):
+        self.mongo_db = None
+        self.mongo_client = None
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         s = cls()
+        mongo_host = crawler.settings.get('MONGO_HOST') # 从 settings.py 提取
+        mongo_port = crawler.settings.get('MONGO_PORT')
+        mongo_user = crawler.settings.get('MONGO_USER')  # 数据库登录需要帐号密码的话
+        mongo_psw = crawler.settings.get('MONGO_PSW')
+        mongo_db = crawler.settings.get('MONGO_DB')
+        s.mongo_client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
+        s.mongo_db = s.mongo_client[mongo_db]  # 获得数据库的句柄
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
@@ -77,6 +111,18 @@ class ZjProjectDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
+        # try:
+        #     coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
+        #     one_obj: Dict | None = coll.find_one(filter={'ulr': request.url})
+        #     if not one_obj:
+        #         return HtmlResponse(url=request.url, request=request, encoding='utf8', status=200)
+        #     else:
+        #         spider.logger.info("request.url %s, have been crawled", request.url)
+        #         return None
+        # except TimeoutException:
+        #     return HtmlResponse(url=request.url, request=request, status=500)
+        # finally:
+        #     spider.logger.info('process_request end...')
         return None
 
     def process_response(self, request, response, spider):
