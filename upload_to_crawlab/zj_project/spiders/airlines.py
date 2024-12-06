@@ -5,13 +5,11 @@ from zj_project.items import AirlineItem
 
 class AirlinesSpider(scrapy.Spider):
     name = "airlines"
-    print('spider {}'.format(name))
     current_url = ""
     allowed_domains = ["www.airliners.net"]
     crawled_cache = '{}_crawled_urls.txt'.format(name)
     start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 13000)]
     # 去掉爬取过的
-
     # with open(crawled_cache, mode='a+', encoding='utf8') as f:
     #     readed_urls = {u for u in f.readline()}
     #     start_urls = list(set(start_urls).difference(readed_urls))

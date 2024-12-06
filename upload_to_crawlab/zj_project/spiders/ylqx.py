@@ -6,20 +6,20 @@ class YlqxSpider(scrapy.Spider):
     name = "ylqx"
     allowed_domains = ["ylqx.qgyyzs.net"]
     start_urls = ["https://ylqx.qgyyzs.net/zs/list_0_0_0_{}.htm".format(i) for i in range(1, 2754, 1)]
-    current_url = ""
+    # current_url = ""
     # 去掉爬取过的
-    with open('ylqx_crawled_urls.txt', mode='a+', encoding='utf8') as f:
-        old_lines = [line.strip() for line in f.readlines()]
+    # with open('ylqx_crawled_urls.txt', mode='a+', encoding='utf8') as f:
+    #     old_lines = [line.strip() for line in f.readlines()]
+    #
+    #     readed_urls = {u for u in f.readline()}
+    #     start_urls = list(set(start_urls).difference(readed_urls))
+    #     if old_lines:
+    #         start_urls.insert(0, old_lines[-1])
 
-        readed_urls = {u for u in f.readline()}
-        start_urls = list(set(start_urls).difference(readed_urls))
-        if old_lines:
-            start_urls.insert(0, old_lines[-1])
-
-    # def start_requests(self):
-    #     HTTP_PROXY = 'http://127.0.0.1:7897'  # 替换为你的代理IP
-    #     for url in self.start_urls:
-    #         yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
+    def start_requests(self):
+        HTTP_PROXY = 'http://127.0.0.1:7897'  # 替换为你的代理IP
+        for url in self.start_urls:
+            yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
 
     def parse(self, response: Response):
         self.current_url = response.url
