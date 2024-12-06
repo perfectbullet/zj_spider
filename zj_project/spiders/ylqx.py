@@ -17,8 +17,7 @@ class YlqxSpider(scrapy.Spider):
             start_urls.insert(0, old_lines[-1])
 
     def start_requests(self):
-        HTTP_PROXY = 'http://171.248.52.22:8080'  # 替换为你的代理IP
-
+        HTTP_PROXY = 'http://127.0.0.1:7897'  # 替换为你的代理IP
         for url in self.start_urls:
             yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
 

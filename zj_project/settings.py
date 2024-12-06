@@ -119,3 +119,11 @@ if cwd.startswith('/root/crawlab_workspace'):
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+# mongodb配置
+MONGO_HOST = "127.0.0.1"  # 主机IP
+MONGO_PORT = 17017  # 端口号
+MONGO_DB = "zjspider"  # 库名
+MONGO_COLL_WEIBO = "zjspider_settings"  # collection名
+MONGO_USER = "gx" #用户名
+MONGO_PSW = "gx301213" #用户密码

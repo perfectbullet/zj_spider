@@ -9,11 +9,13 @@ import requests
 # from itemadapter import ItemAdapter
 
 import sqlite3
+import pymongo
+from scrapy.utils.project import get_project_settings
 
 from zj_project.settings import cwd
 
 image_dir = 'image_dir'
-
+settings = get_project_settings()
 
 class ZjProjectPipeline:
     def process_item(self, item, spider):
@@ -55,6 +57,11 @@ class Sqlite3Pipeline(object):
     def __init__(self, sqlite_file, sqlite_table):
         self.sqlite_file = sqlite_file
         self.sqlite_table = sqlite_table
+
+        # 数据库登录需要帐号密码的话
+        self.client = pymongo.MongoClient(host=settings['MONGO_HOST'], port=settings['MONGO_PORT'], username=settings['MONGO_USER'], password=settings['MONGO_PSW'])
+        self.db = self.client[settings['MONGO_DB']]  # 获得数据库的句柄
+        self.coll = self.db[settings['MONGO_COLL_WEIBO']]  # 获得collection的句柄
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -107,12 +114,15 @@ class Sqlite3Pipeline(object):
                                                                 ','.join(item.fields.keys()),
                                                                 ','.join(['?'] * len(item.fields.keys())))
         args_list = [item[k] for k in item.fields.keys()]
-        if not cwd.startswith('/root/crawlab_workspace'):
-            self.cur.execute(insert_sql, args_list)
-            self.conn.commit()
-        spider.logger.info("spider.current_url %s", spider.current_url)
-        with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
-            old_lines = {line.strip() for line in f.readlines()}
-            if spider.current_url not in old_lines:
-                f.write(spider.current_url + '\n')
+        # if not cwd.startswith('/root/crawlab_workspace'):
+        #     self.cur.execute(insert_sql, args_list)
+        #     self.conn.commit()
+        #
+        #     with open('{}_crawled_urls.txt'.format(spider.name), mode='r+', encoding='utf8') as f:
+        #         old_lines = {line.strip() for line in f.readlines()}
+        #         if spider.current_url not in old_lines:
+        #             f.write(spider.current_url + '\n')
+        # else:
+        coll = self.db[settings['MONGO_COLL_WEIBO']]  # 获得collection的句柄
+        coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
         return item
