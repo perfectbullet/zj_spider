@@ -1,3 +1,5 @@
+from typing import Any
+
 import scrapy
 from scrapy.http import Request, Response
 from zj_project.items import YlqxItem
@@ -6,27 +8,18 @@ class YlqxSpider(scrapy.Spider):
     name = "ylqx"
     allowed_domains = ["ylqx.qgyyzs.net"]
     start_urls = ["https://ylqx.qgyyzs.net/zs/list_0_0_0_{}.htm".format(i) for i in range(1, 2754, 1)]
-    # current_url = ""
-    # 去掉爬取过的
-    # with open('ylqx_crawled_urls.txt', mode='a+', encoding='utf8') as f:
-    #     old_lines = [line.strip() for line in f.readlines()]
-    #
-    #     readed_urls = {u for u in f.readline()}
-    #     start_urls = list(set(start_urls).difference(readed_urls))
-    #     if old_lines:
-    #         start_urls.insert(0, old_lines[-1])
+    current_url = ""
+    # def start_requests(self):
+    #     HTTP_PROXY = 'http://127.0.0.1:7897'  # 替换为你的代理IP
+    #     for url in self.start_urls:
+    #         # yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
+    #         yield scrapy.Request(url)
 
-    def start_requests(self):
-        HTTP_PROXY = 'http://127.0.0.1:7897'  # 替换为你的代理IP
-        for url in self.start_urls:
-            yield scrapy.Request(url, meta={'proxy': HTTP_PROXY})
-
-    def parse(self, response: Response):
+    def parse(self, response: Response) -> Any:
         self.current_url = response.url
-        divList = response.xpath('//div[@class="r_list"]')
-        for idx, div in enumerate(divList, start=1):
-            print('idx is {}'.format(idx))
-            # print('{} div {}\n{}\n'.format('*' * 100, '*' * 100, div, ))
+        div_list = response.xpath('//div[@class="r_list"]')
+        self.logger.info('*******************length of divList is {}*******************'.format(len(div_list)))
+        for idx, div in enumerate(div_list, start=1):
             # . 选取当前节点。 <a href="/search?aircraft=25083&amp;display=detail">
             # //*[@id="layout-page"]/div[2]/section/section/section/div/section[2]/div/div[1]/div/div[1]/div[2]/div
             title = div.xpath('./dl/dt[1]/a[1]/@title').extract_first().strip()
@@ -47,6 +40,7 @@ class YlqxSpider(scrapy.Spider):
                             category=category
                             )
             yield scrapy.Request(url=title_url, callback=self.sec_handler, meta={'item': item}, priority=1)
+
 
     def sec_handler(self, response:Response):
         item = response.meta['item']
