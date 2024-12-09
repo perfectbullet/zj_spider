@@ -9,7 +9,10 @@ headers = {
 }
 
 if __name__ == '__main__':
-    # 测试代理ip https://cn.proxy-tools.com/proxy/https?page=1
+    # 测试代理ip
+    # open https://cn.proxy-tools.com/proxy/https?page=1
+    # copy the page content then copy into  proxy_pages/proxy_pagesv1.txt
+    # ran this scripts
     # 是否可用， 并打印可用的ip和端口
     with open('./proxy_pages/proxy_pagesv1.txt', mode='rt', encoding='utf8') as f:
         for line in f:
