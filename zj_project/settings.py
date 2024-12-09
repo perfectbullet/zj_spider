@@ -32,20 +32,11 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 #设置下裁之后的自动延迟
 # 下载延迟时间，单位是秒，控制爬虫爬取的频率，根据你的项目调整，不要太快也不要太慢，默认是3秒，即爬一个停3秒，设置为1秒性价比较高，如果要爬取的文件较多，写零点几秒也行
 DOWNLOAD_DELAY = 3
-
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
-# CONCURRENT_REQUESTS = 32
-CONCURRENT_REQUESTS = 1
+CONCURRENT_REQUESTS = 32
+# CONCURRENT_REQUESTS = 1
 
-# Configure a delay for requests for the same website (default: 0)
-# See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
-# See also autothrottle settings and docs
-# 下载延迟时间，单位是秒，控制爬虫爬取的频率，根据你的项目调整，不要太快也不要太慢，默认是3秒，即爬一个停3秒，设置为1秒性价比较高，如果要爬取的文件较多，写零点几秒也行
-# DOWNLOAD_DELAY = 9
-# The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED：是否保存COOKIES，默认关闭，开机可以记录爬取过程中的COKIE，非常好用的一个参数
@@ -135,7 +126,7 @@ MONGO_PSW = "gx301213" #用户密码
 
 # 在setting中设置退出条件
 # CLOSESPIDER_TIMEOUT  # 指定时间退出
-CLOSESPIDER_ITEMCOUNT = 250  # 生成了指定数量的item
+CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
 # CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
 # CLOSESPIDER_ERRORCOUNT  # 在发生指定数量的错误
 

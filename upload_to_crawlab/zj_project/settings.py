@@ -35,8 +35,8 @@ DOWNLOAD_DELAY = 3
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
-# CONCURRENT_REQUESTS = 32
-CONCURRENT_REQUESTS = 1
+CONCURRENT_REQUESTS = 32
+# CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -135,7 +135,7 @@ MONGO_PSW = "gx301213" #用户密码
 
 # 在setting中设置退出条件
 # CLOSESPIDER_TIMEOUT  # 指定时间退出
-CLOSESPIDER_ITEMCOUNT = 250  # 生成了指定数量的item
+CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
 # CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
 # CLOSESPIDER_ERRORCOUNT  # 在发生指定数量的错误
 
