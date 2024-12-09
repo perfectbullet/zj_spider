@@ -28,10 +28,10 @@ AUTOTHROTTLE_START_DELAY = 5
 #设置访问之间的最大延迟
 AUTOTHROTTLE_MAX_DELAY = 60
 #设置Scrapy 并行发给每台远程服务器的请求数量
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 #设置下裁之后的自动延迟
 # 下载延迟时间，单位是秒，控制爬虫爬取的频率，根据你的项目调整，不要太快也不要太慢，默认是3秒，即爬一个停3秒，设置为1秒性价比较高，如果要爬取的文件较多，写零点几秒也行
-DOWNLOAD_DELAY = 9
+DOWNLOAD_DELAY = 3
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
@@ -69,9 +69,10 @@ SPIDER_MIDDLEWARES = {
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
+DOWNLOADER_MIDDLEWARES = {
 #    "zj_project.middlewares.ZjProjectDownloaderMiddleware": 543,
-# }
+    'zj_project.middlewares.ProxyMiddleware': 350,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -134,8 +135,8 @@ MONGO_PSW = "gx301213" #用户密码
 
 # 在setting中设置退出条件
 # CLOSESPIDER_TIMEOUT  # 指定时间退出
-# CLOSESPIDER_ITEMCOUNT  # 生成了指定数量的item
-CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
+CLOSESPIDER_ITEMCOUNT = 250  # 生成了指定数量的item
+# CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
 # CLOSESPIDER_ERRORCOUNT  # 在发生指定数量的错误
 
 # 打开EXTENSIONS扩展

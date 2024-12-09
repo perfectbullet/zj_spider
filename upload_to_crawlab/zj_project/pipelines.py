@@ -20,7 +20,7 @@ settings = get_project_settings()
 
 class ZjProjectPipeline:
     def process_item(self, item, spider):
-        # print('ZjProjectPipeline item {}'.format(item))
+        spider.logger.info('ZjProjectPipeline item {}'.format(item))
         return item
 
 

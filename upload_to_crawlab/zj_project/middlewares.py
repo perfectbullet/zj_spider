@@ -1,21 +1,18 @@
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-from typing import Dict
 import logging
+import random
+from typing import Dict
+
 import pymongo
 from scrapy import signals
 
-# useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-from scrapy.http import HtmlResponse, Response
-
 
 class ZjProjectSpiderMiddleware:
-    # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the spider middleware does not modify the
-    # passed objects.
+    '''
+    处理
+    '''
+    # 并非所有方法都需要定义。如果未定义方法，
+    # scrapy 的行为就如同 spider 中间件不会修改
+    # 传递的对象。
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -77,71 +74,40 @@ class TimeoutException:
     pass
 
 
-class ZjProjectDownloaderMiddleware:
-    # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the downloader middleware does not modify the
-    # passed objects.
+class ProxyMiddleware:
+    '''
+    处理代理的情况
+    '''
 
     def __init__(self):
-        self.mongo_db = None
-        self.mongo_client = None
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        # This method is used by Scrapy to create your spiders.
-        s = cls()
-        mongo_host = crawler.settings.get('MONGO_HOST') # 从 settings.py 提取
-        mongo_port = crawler.settings.get('MONGO_PORT')
-        mongo_user = crawler.settings.get('MONGO_USER')  # 数据库登录需要帐号密码的话
-        mongo_psw = crawler.settings.get('MONGO_PSW')
-        mongo_db = crawler.settings.get('MONGO_DB')
-        s.mongo_client = pymongo.MongoClient(host=mongo_host, port=mongo_port, username=mongo_user, password=mongo_psw)
-        s.mongo_db = s.mongo_client[mongo_db]  # 获得数据库的句柄
-        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-        return s
+        with open('./proxy_list.txt', mode='rt', encoding='utf8') as f:
+            self.proxy_list = [line.strip() for line in f if line]
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
+        random_proxy_url = random.choice(self.proxy_list)
+        request.meta['proxy'] = 'http://' + random_proxy_url
+        request.meta['download_timeout'] = 15
+        # localhost proxy
+        # request.meta['proxy'] = 'http://127.0.0.1:7897'
 
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
-        # try:
-        #     coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
-        #     one_obj: Dict | None = coll.find_one(filter={'ulr': request.url})
-        #     if not one_obj:
-        #         return HtmlResponse(url=request.url, request=request, encoding='utf8', status=200)
-        #     else:
-        #         spider.logger.info("request.url %s, have been crawled", request.url)
-        #         return None
-        # except TimeoutException:
-        #     return HtmlResponse(url=request.url, request=request, status=500)
-        # finally:
-        #     spider.logger.info('process_request end...')
+        spider.logger.info('process_request \n'
+                           'new proxy is {}\n'
+                           'request.url is {}'.format(request.meta['proxy'], request.url))
+        # 当返回是None时，Scrapy将继续处理该Request，接着执行其他Downloader Middleware的
         return None
 
-    def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
-        return response
-
     def process_exception(self, request, exception, spider):
-        # Called when a download handler or a process_request()
-        # (from other downloader middleware) raises an exception.
+        # 处理异常，切换代理
+        old_proxy = request.meta['proxy'].replace('/', '')
+        spider.logger.info('process exception.args is {}\n'
+                           'old_proxy is {}\n'
+                           'url is {}'.format(exception.args, old_proxy, request.url))
+        random_proxy_url = random.choice(self.proxy_list)
+        request.meta['proxy'] = 'http://' + random_proxy_url
+        return request
 
-        # Must either:
-        # - return None: continue processing this exception
-        # - return a Response object: stops process_exception() chain
-        # - return a Request object: stops process_exception() chain
-        pass
-
-    def spider_opened(self, spider):
-        spider.logger.info("Spider opened: %s" % spider.name)
+    def process_response(self, request, response, spider):
+        spider.logger.info('process_response\n'
+                           'ok proxy is {}\n'
+                           'url is {}'.format(request.meta['proxy'], request.url))
+        return response
