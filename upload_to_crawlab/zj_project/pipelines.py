@@ -147,5 +147,6 @@ class MongodbPipeline(object):
         one_obj: Dict|None = coll.find_one(filter={'ulr': spider.current_url})
         if not one_obj:
             coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
-            self.count_pages
+            self.count_pages += 1
+        spider.logger.info('self.count_pages is {}'.format(self.count_pages))
         return item
