@@ -1,7 +1,7 @@
 import requests
 import re
 
-url = "https://ylqx.qgyyzs.net/business/zs267860.htm"
+url = "https://3618med.com/product/p1.html"
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 headers = {
