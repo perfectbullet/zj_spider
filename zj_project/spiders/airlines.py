@@ -23,6 +23,7 @@ class AirlinesSpider(scrapy.Spider):
         print(len(divList))
         # print('{}\nlen div list {}\n{}\n'.format('*' * 100, len(divList), '*' * 100))
         for div in divList:
+
             # print('{} div {}\n{}\n'.format('*' * 100, '*' * 100, div, ))
             # . 选取当前节点。 <a href="/search?aircraft=25083&amp;display=detail">
             # //*[@id="layout-page"]/div[2]/section/section/section/div/section[2]/div/div[1]/div/div[1]/div[2]/div
