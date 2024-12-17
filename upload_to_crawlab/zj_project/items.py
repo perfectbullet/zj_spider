@@ -21,6 +21,17 @@ class AirlineItem(scrapy.Item):
     location = scrapy.Field()
     air_force = scrapy.Field()
 
+class AirlineItemv3(scrapy.Item):
+    '''
+    image download
+    '''
+    # define the fields for your item here like:
+    image_urls = scrapy.Field()  # 图片链接
+    name = scrapy.Field()  # 飞机名称
+    image_path = scrapy.Field()  # 图片地址
+    date = scrapy.Field()
+    location = scrapy.Field()
+    air_force = scrapy.Field()
 
 class YlqxItem(scrapy.Item):
     title = scrapy.Field() # 标题

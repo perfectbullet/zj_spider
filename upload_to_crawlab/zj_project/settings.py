@@ -69,16 +69,21 @@ HTTPERROR_ALLOWED_CODES = [406]#上面报的是403，就把403加入。
 # 保存到sqlit数据库
 SQLITE_FILE = 'zjspider.db'
 # SQLITE_TABLE = 'airline'
-ITEM_PIPELINES = {
-    "zj_project.pipelines.ZjProjectPipeline": 300,
-    # 'zj_project.pipelines.Sqlite3Pipeline': 400,
-    # 'zj_project.pipelines.SaveAirlineImage': 350,
-    'zj_project.pipelines.MongodbPipeline': 350,
-}
 
 if cwd.startswith('/root/crawlab_workspace'):
    # run by scrapy
-   ITEM_PIPELINES['crawlab.scrapy.pipelines.CrawlabPipeline'] = 888
+   ITEM_PIPELINES = {
+       'crawlab.scrapy.pipelines.CrawlabPipeline': 300,
+       "zj_project.pipelines.MyImagePipeline": 200
+   }
+else:
+    ITEM_PIPELINES = {
+        "zj_project.pipelines.ZjProjectPipeline": 300,
+        'zj_project.pipelines.MongodbPipeline': 350,
+        "zj_project.pipelines.MyImagePipeline": 200
+    }
+
+
 
 
 # Set settings whose default value is deprecated to a future-proof value
@@ -106,3 +111,13 @@ CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
 EXTENSIONS = {
    'scrapy.extensions.closespider.CloseSpider': 500,
 }
+
+# ftp配置
+if cwd.startswith('/root/crawlab_workspace'):
+    IMAGES_STORE = "ftp://gx:gx301213@localhost:21/images"
+else:
+    IMAGES_STORE = "ftp://gx:gx301213@pure-ftpd:21/images"
+
+# filter small image
+IMAGES_MIN_HEIGHT = 110
+IMAGES_MIN_WIDTH = 110

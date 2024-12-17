@@ -1,22 +1,16 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import hashlib
 import os
+import sqlite3
 from typing import Dict
 
-import requests
-# useful for handling different item types with a single interface
-# from itemadapter import ItemAdapter
-
-import sqlite3
 import pymongo
+import requests
+from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.project import get_project_settings
-
-from zj_project.settings import cwd
 
 image_dir = 'image_dir'
 settings = get_project_settings()
+
 
 class ZjProjectPipeline:
     def process_item(self, item, spider):
@@ -104,7 +98,6 @@ class Sqlite3Pipeline(object):
         self.conn.close()
 
     def process_item(self, item, spider):
-
         insert_sql = "insert into {0}({1}) values ({2})".format(self.sqlite_table,
                                                                 ','.join(item.fields.keys()),
                                                                 ','.join(['?'] * len(item.fields.keys())))
@@ -130,7 +123,7 @@ class MongodbPipeline(object):
         return cls(
             mongo_host=crawler.settings.get('MONGO_HOST'),  # 从 settings.py 提取
             mongo_port=crawler.settings.get('MONGO_PORT'),
-            mongo_user=crawler.settings.get('MONGO_USER'), # 数据库登录需要帐号密码的话
+            mongo_user=crawler.settings.get('MONGO_USER'),  # 数据库登录需要帐号密码的话
             mongo_psw=crawler.settings.get('MONGO_PSW'),
             mongo_db=crawler.settings.get('MONGO_DB'),
         )
@@ -144,9 +137,21 @@ class MongodbPipeline(object):
     def process_item(self, item, spider):
         # 保存爬取过的页面，去重
         coll = self.db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
-        one_obj: Dict|None = coll.find_one(filter={'ulr': spider.current_url})
+        one_obj: Dict | None = coll.find_one(filter={'ulr': spider.current_url})
         if not one_obj:
             coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
             self.count_pages += 1
         spider.logger.info('self.count_pages is {}'.format(self.count_pages))
         return item
+
+
+class MyImagePipeline(ImagesPipeline):
+    '''
+    Custom File Naming
+    '''
+
+    def file_path(self, request, response=None, info=None, *, item=None):
+        image_url_hash = hashlib.shake_256(request.url.encode()).hexdigest(5)
+        image_perspective = request.url.split("/")[-2]
+        image_filename = f"{image_url_hash}_{image_perspective}.jpg"
+        return image_filename
