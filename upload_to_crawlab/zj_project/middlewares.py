@@ -8,7 +8,7 @@ from scrapy import signals
 
 class ZjProjectSpiderMiddleware:
     '''
-    处理
+    处理 去掉爬取过的
     '''
     # 并非所有方法都需要定义。如果未定义方法，
     # scrapy 的行为就如同 spider 中间件不会修改
