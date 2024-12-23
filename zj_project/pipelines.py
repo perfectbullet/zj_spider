@@ -62,6 +62,7 @@ class SaveAirlineImage:
                     image_filename = self.upload(response)
                     spider.logger.info('ZjProjectPipeline upload {} to ftp'.format(image_filename))
                     item['image_filename'] = image_filename
+                    item['image_url'] = 'http://localhost:8010/{}'.format(image_filename)
                     return item
             except Exception as e:
                 spider.logger.info('ZjProjectPipeline Exception is {}'.format(e))
