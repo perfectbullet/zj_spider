@@ -23,7 +23,7 @@ AUTOTHROTTLE_MAX_DELAY = 60
 AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 #设置下裁之后的自动延迟
 # 下载延迟时间，单位是秒，控制爬虫爬取的频率，根据你的项目调整，不要太快也不要太慢，默认是3秒，即爬一个停3秒，设置为1秒性价比较高，如果要爬取的文件较多，写零点几秒也行
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
 CONCURRENT_REQUESTS = 32
@@ -62,12 +62,11 @@ DOWNLOADER_MIDDLEWARES = {
 #EXTENSIONS = {
 #    "scrapy.extensions.telnet.TelnetConsole": None,
 #}
-HTTPERROR_ALLOWED_CODES = [406]#上面报的是403，就把403加入。
+#上面报的是403，就把403加入。
+HTTPERROR_ALLOWED_CODES = [406, ]
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # ITEM_PIPELINES：项目管道，300为优先级，越低越爬取的优先度越高
-# 保存到sqlit数据库
-SQLITE_FILE = 'zjspider.db'
 
 if cwd.startswith('/root/crawlab_workspace'):
    # run by scrapy
