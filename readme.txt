@@ -54,3 +54,7 @@ git@github.com:perfectbullet/zj_spider.git
 (base) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$ source venv/bin/activate
 (venv) (base) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$ conda deactivate
 (venv) ubuntu@ubuntu-desktop-2204:/data/spider_new/zj_spider$
+
+
+# Scrapy 中 ImagesPipeline 无法执行，不起作用，图片无法下载处理
+pip install pillow

@@ -54,7 +54,7 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
 #    "zj_project.middlewares.ZjProjectDownloaderMiddleware": 543,
-    'zj_project.middlewares.ProxyMiddleware': 350,
+    'zj_project.middlewares.ProxyMiddleware': 200,
 }
 
 # Enable or disable extensions
@@ -68,18 +68,19 @@ HTTPERROR_ALLOWED_CODES = [406]#上面报的是403，就把403加入。
 # ITEM_PIPELINES：项目管道，300为优先级，越低越爬取的优先度越高
 # 保存到sqlit数据库
 SQLITE_FILE = 'zjspider.db'
-# SQLITE_TABLE = 'airline'
-ITEM_PIPELINES = {
-    "zj_project.pipelines.ZjProjectPipeline": 300,
-    # 'zj_project.pipelines.Sqlite3Pipeline': 400,
-    # 'zj_project.pipelines.SaveAirlineImage': 350,
-    'zj_project.pipelines.MongodbPipeline': 350,
-}
 
 if cwd.startswith('/root/crawlab_workspace'):
    # run by scrapy
-   ITEM_PIPELINES['crawlab.scrapy.pipelines.CrawlabPipeline'] = 888
-
+   ITEM_PIPELINES = {
+       'crawlab.scrapy.pipelines.CrawlabPipeline': 300,
+       "zj_project.pipelines.SaveAirlineImage": 200,
+       'zj_project.pipelines.MongodbPipeline': 400,
+   }
+else:
+    ITEM_PIPELINES = {
+        "zj_project.pipelines.SaveAirlineImage": 200,
+        'zj_project.pipelines.MongodbPipeline': 400,
+    }
 
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
@@ -106,3 +107,21 @@ CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
 EXTENSIONS = {
    'scrapy.extensions.closespider.CloseSpider': 500,
 }
+
+# ################### ftp配置
+# ftp 内的图片目录
+IMAGES_STORE_DIR = 'images'
+if cwd.startswith('/root/crawlab_workspace'):
+    IMAGES_STORE = "ftp://gx:gx301213@localhost:21/images"
+    FTP_HOST = "pure-ftpd"
+else:
+    IMAGES_STORE = "ftp://gx:gx301213@pure-ftpd:21/images"
+    FTP_HOST = "localhost"
+FTP_USER = 'gx'
+FTP_PASS = 'gx301213'
+# ################### ftp配置
+
+
+# filter small image
+IMAGES_MIN_HEIGHT = 28
+IMAGES_MIN_WIDTH = 28

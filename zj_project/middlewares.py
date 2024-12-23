@@ -8,7 +8,7 @@ from scrapy import signals
 
 class ZjProjectSpiderMiddleware:
     '''
-    处理
+    处理 去掉爬取过的
     '''
     # 并非所有方法都需要定义。如果未定义方法，
     # scrapy 的行为就如同 spider 中间件不会修改
@@ -98,12 +98,18 @@ class ProxyMiddleware:
 
     def process_exception(self, request, exception, spider):
         # 处理异常，切换代理
-        old_proxy = request.meta['proxy'].replace('/', '')
+        old_proxy = request.meta['proxy']
         spider.logger.info('process exception.args is {}\n'
                            'old_proxy is {}\n'
                            'url is {}'.format(exception.args, old_proxy, request.url))
+        self.proxy_list.remove(old_proxy)
+        if not self.proxy_list:
+            raise RuntimeError('proxy_list is empty')
         random_proxy_url = random.choice(self.proxy_list)
         request.meta['proxy'] = 'http://' + random_proxy_url
+        spider.logger.info('process exception.args is {}\n'
+                           'new_proxy is {}\n'
+                           'url is {}'.format(exception.args, request.meta['proxy'], request.url))
         return request
 
     def process_response(self, request, response, spider):
