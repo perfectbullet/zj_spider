@@ -5,8 +5,10 @@ class YiliaoqixieSpider(scrapy.Spider):
     name = "yiliaoqixiev3"
     allowed_domains = ["https://www.3618med.com"]
     start_urls = ["https://www.3618med.com/product/p{}.html".format(i) for i in range(1, 4800, 1)]
+    current_url = ''
 
     def parse(self, response):
+        self.current_url = response.url
         divlivst = response.xpath('//ul[@class="tia_l_list"]/li')
         for idx, li in enumerate(divlivst, start=1):
             print('idx is {}'.format(idx))

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # 是否可用， 并打印可用的ip和端口
     with open('./proxy_pages/proxy_pagesv1.txt', mode='rt', encoding='utf8') as f:
         for line in f:
-            mt = re.match('(\d+\.\d+\.\d+\.\d+)\t(\d+)\t\w+\t.*\t.*\n', line)
+            mt = re.match(r'(\d+\.\d+\.\d+\.\d+)\t(\d+)\t\w+\t.*\t.*\n', line)
             if mt is not None:
                 ip_port = '{}:{}'.format(mt.group(1), mt.group(2))
                 proxy = 'http://' + ip_port
