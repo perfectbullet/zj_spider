@@ -9,7 +9,7 @@ class AirlinesSpiderv3(scrapy.Spider):
     current_url = ""
     allowed_domains = ["www.airliners.net"]
     crawled_cache = '{}_crawled_urls.txt'.format(name)
-    start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 13000)]
+    start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 88)]
 
     def parse(self, response):
         self.current_url = response.url

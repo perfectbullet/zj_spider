@@ -32,6 +32,7 @@ class AirlineItemv3(scrapy.Item):
     date = scrapy.Field()
     location = scrapy.Field()
     air_force = scrapy.Field()
+    proxy = scrapy.Field()
 
 class YlqxItem(scrapy.Item):
     title = scrapy.Field() # 标题

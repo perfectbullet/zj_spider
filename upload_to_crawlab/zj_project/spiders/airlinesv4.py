@@ -4,12 +4,12 @@ from zj_project.items import AirlineItemv3
 
 
 class AirlinesSpiderv3(scrapy.Spider):
-    name = "airlinesv3"
+    name = "airlinesv4"
     print('spider {}'.format(name))
     current_url = ""
     allowed_domains = ["www.airliners.net"]
     crawled_cache = '{}_crawled_urls.txt'.format(name)
-    start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 13000)]
+    start_urls = ["https://www.airliners.net/search?photoCategory=9&page={}".format(u) for u in range(1, 88)]
 
     def parse(self, response):
         self.current_url = response.url
@@ -25,5 +25,7 @@ class AirlinesSpiderv3(scrapy.Spider):
             air_force = div.xpath('./div[2]/div[2]/div[1]/div[1]/a/text()').extract_first().strip()  # 1.封面图片链接
             date = div.xpath('./*[@class="ps-v2-results-col ps-v2-results-col-location-date"]/div[2]/div[1]/div[2]/a[2]/text()').extract_first().strip()
             location = div.xpath('./*[@class="ps-v2-results-col ps-v2-results-col-location-date"]/div[2]/div[1]/div[1]/a[1]/text()').extract_first().strip()
-            item = AirlineItemv3(image_urls=[imgLink,], name=name, air_force=air_force, date=date, location=location)
+            # item = AirlineItemv3(image_urls=[imgLink,], name=name, air_force=air_force, date=date, location=location)
+            item = dict(image_urls=[imgLink,], name=name, air_force=air_force, date=date, location=location)
+            item['proxy'] = response.meta['proxy']
             yield item

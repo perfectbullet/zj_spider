@@ -73,15 +73,13 @@ if cwd.startswith('/root/crawlab_workspace'):
    # run by scrapy
    ITEM_PIPELINES = {
        'crawlab.scrapy.pipelines.CrawlabPipeline': 300,
-       "zj_project.pipelines.ZjProjectPipeline": 350,
+       "zj_project.pipelines.SaveAirlineImage": 200,
        'zj_project.pipelines.MongodbPipeline': 400,
-       # "zj_project.pipelines.MyImagePipeline": 200
    }
 else:
     ITEM_PIPELINES = {
-        "zj_project.pipelines.ZjProjectPipeline": 350,
+        "zj_project.pipelines.SaveAirlineImage": 200,
         'zj_project.pipelines.MongodbPipeline': 400,
-        # "zj_project.pipelines.MyImagePipeline": 350
     }
 
 # Set settings whose default value is deprecated to a future-proof value
@@ -110,7 +108,9 @@ EXTENSIONS = {
    'scrapy.extensions.closespider.CloseSpider': 500,
 }
 
-# ftp配置
+# ################### ftp配置
+# ftp 内的图片目录
+IMAGES_STORE_DIR = 'images'
 if cwd.startswith('/root/crawlab_workspace'):
     IMAGES_STORE = "ftp://gx:gx301213@localhost:21/images"
     FTP_HOST = "pure-ftpd"
@@ -119,6 +119,8 @@ else:
     FTP_HOST = "localhost"
 FTP_USER = 'gx'
 FTP_PASS = 'gx301213'
+# ################### ftp配置
+
 
 # filter small image
 IMAGES_MIN_HEIGHT = 28
