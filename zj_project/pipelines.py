@@ -55,6 +55,7 @@ class SaveAirlineImage:
             try:
                 # response = requests.get(item['image_urls'][0], proxies=proxies)
                 image_url = item['image_urls'][0]
+                spider.logger.info('SaveAirlineImage proxies is {}, image_url is {}'.format(proxies, image_url))
                 response = requests.get(image_url, proxies=proxies, stream=True)
                 if response.status_code == 200:
                     # spider.logger.info(
@@ -65,7 +66,7 @@ class SaveAirlineImage:
                     item['image_url'] = 'http://localhost:8010/{}'.format(image_filename)
                     return item
             except Exception as e:
-                spider.logger.info('ZjProjectPipeline Exception is {}'.format(e))
+                spider.logger.error('SaveAirlineImage Exception is {}'.format(e))
         return item
 
 
