@@ -26,7 +26,7 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 DOWNLOAD_DELAY = 3
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 3
 # CONCURRENT_REQUESTS = 1
 
 
@@ -54,7 +54,7 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
 #    "zj_project.middlewares.ZjProjectDownloaderMiddleware": 543,
-    'zj_project.middlewares.ProxyMiddleware': 200,
+#     'zj_project.middlewares.ProxyMiddleware': 200,
 }
 
 # Enable or disable extensions

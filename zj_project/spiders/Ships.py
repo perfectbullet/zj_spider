@@ -2,20 +2,23 @@ import scrapy
 
 
 class ShipsSpider(scrapy.Spider):
-    name = "shipsv1"
+    name = "shipsv2"
     allowed_domains = ["junshi.china.com"]
     start_urls = ["https://junshi.china.com/wuqi/so/130002593_0_0_{}.html".format(i) for i in range(1, 40, 1)]
 
     def parse(self, response):
         item = {}
         class_new_urls_li = response.xpath('//div[@class="search_list"]/ul[@class="mod_pic_3 clearfix"]/li')
-        for idx, li in enumerate(class_new_urls_li, start=1):
-            item['title'] = li.xpath('.//h3/a/text()').extract_first()
-            item['image_url'] = li.xpath('.//a/img/@src').extract_first()
-            item['title_url'] = li.xpath('.//h3/a/@href').extract_first()
+        for li in class_new_urls_li:
+            item['title'] = li.xpath('./h3/a/text()').extract_first()
+            item['image_url'] = li.xpath('./a/img/@src').extract_first()
+            # use to  download images
+            item['image_urls'] = [item['image_url'],]
+            item['title_url'] = li.xpath('./h3/a/@href').extract_first()
             yield scrapy.Request(url=item['title_url'], meta={'item': item}, callback=self.sec_handler)
 
     def sec_handler(self, response):
+
         item = response.meta['item']
         # 获取子页面内容
         item['fuyiyu'] = response.xpath('//*[@id="info-flow"]/div[1]/div[3]/p/text()').extract_first()  # 服役单位

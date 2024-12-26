@@ -47,26 +47,21 @@ class SaveAirlineImage:
                     return image_filename
 
     def process_item(self, item, spider):
-        for proxy_url in self.proxy_list:
-            proxies = {
-                # 'http': 'http://' + proxy_url,
-                'https': 'http://' + proxy_url,
-            }
-            try:
-                # response = requests.get(item['image_urls'][0], proxies=proxies)
-                image_url = item['image_urls'][0]
-                response = requests.get(image_url, proxies=proxies, stream=True)
-                if response.status_code == 200:
-                    # spider.logger.info(
-                    #     'ZjProjectPipeline item {}, proxies is {}, response is {}'.format(item, proxies, response))
-                    image_filename = self.upload(response)
-                    spider.logger.info('ZjProjectPipeline upload {} to ftp'.format(image_filename))
-                    item['image_filename'] = image_filename
-                    return item
-            except Exception as e:
-                spider.logger.info('ZjProjectPipeline Exception is {}'.format(e))
-        return item
-
+        try:
+            # response = requests.get(item['image_urls'][0], proxies=proxies)
+            image_url = item['image_urls'][0]
+            response = requests.get(image_url,  stream=True)
+            if response.status_code == 200:
+                # spider.logger.info(
+                #     'ZjProjectPipeline item {}, proxies is {}, response is {}'.format(item, proxies, response))
+                image_filename = self.upload(response)
+                spider.logger.info('ZjProjectPipeline upload {} to ftp'.format(image_filename))
+                item['image_filename'] = image_filename
+                return item
+        except Exception as e:
+            spider.logger.info('ZjProjectPipeline Exception is {}'.format(e))
+            item['image_filename'] = ''
+            return item
 
 class MongodbPipeline(object):
 
