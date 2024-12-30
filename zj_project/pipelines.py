@@ -1,5 +1,6 @@
 import ftplib
 import hashlib
+import os
 from io import BytesIO
 from typing import Dict
 
@@ -7,7 +8,6 @@ import pymongo
 import requests
 from PIL import Image
 from scrapy.utils.project import get_project_settings
-
 
 settings = get_project_settings()
 
@@ -30,11 +30,21 @@ class SaveAirlineImage:
         IMAGES_STORE_DIR = settings.get('IMAGES_STORE_DIR')
         return cls(FTP_HOST, FTP_USER, FTP_PASS, IMAGES_STORE_DIR)
 
-    def upload(self, response):
+    def create_dir(self, dir_path):
+        try:
+            self.ftp.cwd(dir_path)
+        except ftplib.error_perm:
+            # 目标目录不存在，创建目录
+            self.ftp.mkd(dir_path)
+
+    def upload(self, response, spider_name):
         # local file name you want to upload
         image_url_hash = hashlib.shake_256(response.url.encode()).hexdigest(5)
-        image_perspective = response.url.split("/")[-2]
-        image_filename = f"{self.images_store_dir}/{image_url_hash}_{image_perspective}.jpg"
+        image_perspective = response.url.split("/")[-1]
+        image_perspective = image_perspective.split('.')[-1]
+
+        self.create_dir(spider_name)
+        image_filename = f"{spider_name}/{image_url_hash}_{image_perspective}.jpg"
 
         with BytesIO(response.content) as f:
             with Image.open(f) as image:
@@ -82,7 +92,7 @@ class SaveAirlineImage:
                 if response.status_code == 200:
                     spider.logger.info(
                         'SaveAirlineImage item {}, not proxies, response is {}'.format(item, response))
-                    image_filename = self.upload(response)
+                    image_filename = self.upload(response, spider.name)
                     spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
                     item['image_filenames'].append(image_filename)
                     local_image_url = 'http://localhost:8010/{}'.format(image_filename)
