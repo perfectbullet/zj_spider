@@ -49,7 +49,7 @@ class SaveAirlineImage:
     def process_item(self, item, spider):
         for proxy_url in self.proxy_list:
             proxies = {
-                # 'http': 'http://' + proxy_url,
+                'http': 'http://' + proxy_url,
                 'https': 'http://' + proxy_url,
             }
             try:

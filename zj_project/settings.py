@@ -53,8 +53,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-#    "zj_project.middlewares.ZjProjectDownloaderMiddleware": 543,
-    'zj_project.middlewares.ProxyMiddleware': 200,
+    # 'zj_project.middlewares.ProxyMiddleware': 200,
 }
 
 # Enable or disable extensions

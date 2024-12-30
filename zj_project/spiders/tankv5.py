@@ -2,10 +2,10 @@ import scrapy
 
 
 class TankSpider(scrapy.Spider):
-    name = "tank"
+    name = "tankv5"
     allowed_domains = ["www.militaryfactory.com"]
-    start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id={}".format(i) for i in range(1, 1000, 1)]
-
+    # start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id={}".format(i) for i in range(1, 1000, 1)]
+    start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id=1",]
     def parse(self, response):
         self.current_url = response.url
         item = {}
@@ -16,6 +16,11 @@ class TankSpider(scrapy.Spider):
         item['image_url'] = 'https://www.militaryfactory.com' + response.xpath('/html/body/div[5]/div/div[2]/a/div/img[2]/@src').extract_first()
         item['image_urls'] = [item['image_url'], ]
         item['content'] = ''
+        mySlides_fades = response.xpath('//div[@class="slideshow-container"]/div')
+        for fade in mySlides_fades:
+            fade_image = fade.xpath('./img/@src').extract_first()
+            fade_image = '{}{}{}'.format('https://', self.allowed_domains[0], fade_image)
+            item['image_urls'].append(fade_image)
         for span in response.xpath('/html/body/div[6]/div/span/text()'):
             text = span.extract()
             if text == '\r\n':
