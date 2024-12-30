@@ -4,8 +4,8 @@ import scrapy
 class TankSpider(scrapy.Spider):
     name = "tankv5"
     allowed_domains = ["www.militaryfactory.com"]
-    # start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id={}".format(i) for i in range(1, 1000, 1)]
-    start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id=1",]
+    start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id={}".format(i) for i in range(1, 1000, 1)]
+    start_urls = ["https://www.militaryfactory.com/armor/detail.php?armor_id=2",]
     def parse(self, response):
         self.current_url = response.url
         item = {}

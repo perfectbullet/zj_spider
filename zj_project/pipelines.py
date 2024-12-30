@@ -54,17 +54,19 @@ class SaveAirlineImage:
             }
             try:
                 # response = requests.get(item['image_urls'][0], proxies=proxies)
-                image_url = item['image_urls'][0]
-                spider.logger.info('SaveAirlineImage proxies is {}, image_url is {}'.format(proxies, image_url))
-                response = requests.get(image_url, proxies=proxies, stream=True)
-                if response.status_code == 200:
-                    # spider.logger.info(
-                    #     'ZjProjectPipeline item {}, proxies is {}, response is {}'.format(item, proxies, response))
-                    image_filename = self.upload(response)
-                    spider.logger.info('ZjProjectPipeline upload {} to ftp'.format(image_filename))
-                    item['image_filename'] = image_filename
-                    item['image_url'] = 'http://localhost:8010/{}'.format(image_filename)
-                    return item
+                item['image_filenames'] = []
+                item['local_image_url'] = []
+                for image_url in item['image_urls']:
+                    spider.logger.info('SaveAirlineImage proxies is {}, image_url is {}'.format(proxies, image_url))
+                    response = requests.get(image_url, proxies=proxies, stream=True)
+                    if response.status_code == 200:
+                        spider.logger.info(
+                            'SaveAirlineImage item {}, proxies is {}, response is {}'.format(item, proxies, response))
+                        image_filename = self.upload(response)
+                        spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
+                        item['image_filenames'].appdend(image_filename)
+                        item['local_image_url'].appedn('http://localhost:8010/{}'.format(image_filename))
+                return item
             except Exception as e:
                 spider.logger.error('SaveAirlineImage Exception is {}'.format(e))
         return item
