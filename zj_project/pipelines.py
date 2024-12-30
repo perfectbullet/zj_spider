@@ -47,30 +47,50 @@ class SaveAirlineImage:
                     return image_filename
 
     def process_item(self, item, spider):
-        for proxy_url in self.proxy_list:
-            proxies = {
-                'http': 'http://' + proxy_url,
-                'https': 'http://' + proxy_url,
-            }
-            try:
-                # response = requests.get(item['image_urls'][0], proxies=proxies)
-                item['image_filenames'] = []
-                item['local_image_url'] = []
-                for image_url in item['image_urls']:
-                    spider.logger.info('SaveAirlineImage proxies is {}, image_url is {}'.format(proxies, image_url))
-                    response = requests.get(image_url, proxies=proxies, stream=True)
-                    if response.status_code == 200:
-                        spider.logger.info(
-                            'SaveAirlineImage item {}, proxies is {}, response is {}'.format(item, proxies, response))
-                        image_filename = self.upload(response)
-                        spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
-                        item['image_filenames'].appdend(image_filename)
-                        item['local_image_url'].appedn('http://localhost:8010/{}'.format(image_filename))
-                return item
-            except Exception as e:
-                spider.logger.error('SaveAirlineImage Exception is {}'.format(e))
-        return item
-
+        if spider.crawler.settings.get('USE_PROXY'):
+            for proxy_url in self.proxy_list:
+                proxies = {
+                    'http': 'http://' + proxy_url,
+                    'https': 'http://' + proxy_url,
+                }
+                try:
+                    # response = requests.get(item['image_urls'][0], proxies=proxies)
+                    item['image_filenames'] = []
+                    item['local_image_url'] = []
+                    for image_url in item['image_urls']:
+                        spider.logger.info('SaveAirlineImage proxies is {}, image_url is {}'.format(proxies, image_url))
+                        response = requests.get(image_url, proxies=proxies, stream=True)
+                        if response.status_code == 200:
+                            spider.logger.info(
+                                'SaveAirlineImage item {}, proxies is {}, response is {}'.format(item, proxies, response))
+                            image_filename = self.upload(response)
+                            spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
+                            item['image_filenames'].appdend(image_filename)
+                            item['local_image_url'].appedn('http://localhost:8010/{}'.format(image_filename))
+                        else:
+                            spider.logger.info('SaveAirlineImage load image not ok {}'.format(response))
+                    return item
+                except Exception as e:
+                    spider.logger.error('SaveAirlineImage Exception is {}'.format(e))
+            return item
+        else:
+            item['image_filenames'] = []
+            item['local_image_url'] = []
+            for image_url in item['image_urls']:
+                spider.logger.info('SaveAirlineImage not proxies , image_url is {}'.format( image_url))
+                response = requests.get(image_url, stream=True)
+                if response.status_code == 200:
+                    spider.logger.info(
+                        'SaveAirlineImage item {}, not proxies, response is {}'.format(item, response))
+                    image_filename = self.upload(response)
+                    spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
+                    item['image_filenames'].append(image_filename)
+                    local_image_url = 'http://localhost:8010/{}'.format(image_filename)
+                    item['local_image_url'].append(local_image_url)
+                    item['image_url'] = local_image_url
+                else:
+                    spider.logger.info('SaveAirlineImage load image not ok {}'.format(response))
+            return item
 
 class MongodbPipeline(object):
 
