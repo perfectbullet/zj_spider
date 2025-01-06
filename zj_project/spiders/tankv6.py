@@ -48,8 +48,6 @@ class TankSpider(scrapy.Spider):
             speedk = div_performence.xpath('//div[1]/div[2]/div[2]/span[2]/text()').extract_first()
             rangem = div_performence.xpath('//div[1]/div[2]/div[3]/span[1]/text()').extract_first()
             rangek = div_performence.xpath('//div[1]/div[2]/div[3]/span[2]/text()').extract_first()
-
-            print(response.url + ' speed is ', speedm, rangem)
         except:
             pass
         item['performence_and_power'] = {
