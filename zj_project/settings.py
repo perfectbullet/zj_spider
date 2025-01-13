@@ -26,7 +26,7 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 3
 DOWNLOAD_DELAY = 1
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # 最大并发数，很好理解，就是同时允许开启多少个爬虫线程
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 4
 # CONCURRENT_REQUESTS = 1
 
 

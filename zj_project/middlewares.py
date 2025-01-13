@@ -85,7 +85,7 @@ class ProxyMiddleware:
 
     def process_request(self, request, spider):
         random_proxy_url = random.choice(self.proxy_list)
-        request.meta['proxy'] = 'http://' + random_proxy_url
+        request.meta['proxy'] = random_proxy_url
         request.meta['download_timeout'] = 15
         # localhost proxy
         # request.meta['proxy'] = 'http://127.0.0.1:7897'

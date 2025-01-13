@@ -33,17 +33,19 @@ class SaveAirlineImage:
     def create_dir(self, dir_path):
         try:
             self.ftp.cwd(dir_path)
+            self.ftp.cwd('/')
         except ftplib.error_perm:
             # 目标目录不存在，创建目录
             self.ftp.mkd(dir_path)
+            self.ftp.cwd('/')
 
-    def upload(self, response, spider_name):
+    def upload(self, response, spider):
         # local file name you want to upload
         image_url_hash = hashlib.shake_256(response.url.encode()).hexdigest(5)
         image_perspective = response.url.split("/")[-1]
-
-        self.create_dir(spider_name)
-        image_filename = f"{spider_name}/{image_url_hash}_{image_perspective}.jpg"
+        image_perspective = image_perspective.split('.')[-2]
+        self.create_dir(spider.name)
+        image_filename = f"{spider.name}/{image_url_hash}_{image_perspective}.jpg"
         with BytesIO(response.content) as f:
             with Image.open(f) as image:
                 # converting to jpg
@@ -51,8 +53,12 @@ class SaveAirlineImage:
                 rgb_image.save('tmp.jpg')
                 with open('tmp.jpg', "rb") as file:
                     # use FTP's STOR command to upload the file
-                    self.ftp.storbinary(f"STOR {image_filename}", file)
-                    return image_filename
+                    try:
+                        self.ftp.storbinary(f"STOR {image_filename}", file)
+                        return image_filename
+                    except Exception as e:
+                        spider.logger.error('upload error, image_filename is {}'.format(image_filename))
+                        raise e
 
     def process_item(self, item, spider):
         if spider.crawler.settings.get('USE_PROXY'):
@@ -71,7 +77,7 @@ class SaveAirlineImage:
                         if response.status_code == 200:
                             spider.logger.info(
                                 'SaveAirlineImage item {}, proxies is {}, response is {}'.format(item, proxies, response))
-                            image_filename = self.upload(response)
+                            image_filename = self.upload(response, spider)
                             spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
                             item['image_filenames'].appdend(image_filename)
                             item['local_image_url'].appedn('http://localhost:8010/{}'.format(image_filename))
@@ -90,7 +96,7 @@ class SaveAirlineImage:
                 if response.status_code == 200:
                     spider.logger.info(
                         'SaveAirlineImage item {}, not proxies, response is {}'.format(item, response))
-                    image_filename = self.upload(response, spider.name)
+                    image_filename = self.upload(response, spider)
                     spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
                     item['image_filenames'].append(image_filename)
                     local_image_url = 'http://localhost:8010/{}'.format(image_filename)
