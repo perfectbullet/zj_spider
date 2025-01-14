@@ -23,3 +23,4 @@ venv
 /test_save_image.py
 /test_sqlite.py
 /ylqx_log.log
+/upload_to_crawlab/

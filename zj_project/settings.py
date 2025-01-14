@@ -52,7 +52,7 @@ SPIDER_MIDDLEWARES = {
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-USE_PROXY = False
+USE_PROXY = True
 
 if USE_PROXY:
     DOWNLOADER_MIDDLEWARES = {

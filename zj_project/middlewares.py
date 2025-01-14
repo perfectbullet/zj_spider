@@ -59,6 +59,7 @@ class ZjProjectSpiderMiddleware:
         coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
 
         for r in start_requests:
+            spider.logger.info("process_start_requests %s", r.url)
             one_obj: Dict | None = coll.find_one(filter={'ulr': r.url})
             if not one_obj:
                 yield r
@@ -86,7 +87,7 @@ class ProxyMiddleware:
     def process_request(self, request, spider):
         random_proxy_url = random.choice(self.proxy_list)
         request.meta['proxy'] = random_proxy_url
-        request.meta['download_timeout'] = 15
+        request.meta['download_timeout'] = 60
         # localhost proxy
         # request.meta['proxy'] = 'http://127.0.0.1:7897'
 
@@ -102,7 +103,8 @@ class ProxyMiddleware:
         spider.logger.info('process exception.args is {}\n'
                            'old_proxy is {}\n'
                            'url is {}'.format(exception.args, old_proxy, request.url))
-        self.proxy_list.remove(old_proxy)
+        if len(self.proxy_list) > 2:
+            self.proxy_list.remove(old_proxy)
         if not self.proxy_list:
             raise RuntimeError('proxy_list is empty')
         random_proxy_url = random.choice(self.proxy_list)
