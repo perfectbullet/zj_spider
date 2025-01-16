@@ -47,7 +47,7 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-   "zj_project.middlewares.ZjProjectSpiderMiddleware": 543,
+   "zj_project.middlewares.ZjProjectSpiderMiddleware": 366,
 }
 
 # Enable or disable downloader middlewares
@@ -56,7 +56,9 @@ USE_PROXY = True
 
 if USE_PROXY:
     DOWNLOADER_MIDDLEWARES = {
-        'zj_project.middlewares.ProxyMiddleware': 200,
+        'zj_project.middlewares.ProxyMiddleware': 400,
+        #
+        "zj_project.middlewares.ZjProjectSpiderMiddleware": 366,
     }
 else:
     DOWNLOADER_MIDDLEWARES = { }
@@ -102,7 +104,7 @@ MONGO_PSW = "gx301213" #用户密码
 
 # 在setting中设置退出条件
 # CLOSESPIDER_TIMEOUT  # 指定时间退出
-CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
+# CLOSESPIDER_ITEMCOUNT = 500  # 生成了指定数量的item
 # CLOSESPIDER_PAGECOUNT = 10  # 抓取了指定数量的响应
 # CLOSESPIDER_ERRORCOUNT  # 在发生指定数量的错误
 

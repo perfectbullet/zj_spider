@@ -9,6 +9,7 @@ import requests
 from PIL import Image
 from scrapy.utils.project import get_project_settings
 
+from zj_project.utils import clean_filename
 settings = get_project_settings()
 
 
@@ -44,6 +45,7 @@ class SaveAirlineImage:
         image_url_hash = hashlib.shake_256(response.url.encode()).hexdigest(5)
         image_perspective = response.url.split("/")[-1]
         image_perspective = image_perspective.split('.')[-2]
+        image_perspective = clean_filename(image_perspective)
         self.create_dir(spider.name)
         image_filename = f"{spider.name}/{image_url_hash}_{image_perspective}.jpg"
         with BytesIO(response.content) as f:
@@ -64,8 +66,8 @@ class SaveAirlineImage:
         if spider.crawler.settings.get('USE_PROXY'):
             for proxy_url in self.proxy_list:
                 proxies = {
-                    'http': 'http://' + proxy_url,
-                    'https': 'http://' + proxy_url,
+                    'http': proxy_url,
+                    'https': proxy_url,
                 }
                 try:
                     # response = requests.get(item['image_urls'][0], proxies=proxies)
@@ -79,8 +81,8 @@ class SaveAirlineImage:
                                 'SaveAirlineImage item {}, proxies is {}, response is {}'.format(item, proxies, response))
                             image_filename = self.upload(response, spider)
                             spider.logger.info('SaveAirlineImage upload {} to ftp'.format(image_filename))
-                            item['image_filenames'].appdend(image_filename)
-                            item['local_image_url'].appedn('http://localhost:8010/{}'.format(image_filename))
+                            item['image_filenames'].append(image_filename)
+                            item['local_image_url'].append('http://localhost:8010/{}'.format(image_filename))
                         else:
                             spider.logger.info('SaveAirlineImage load image not ok {}'.format(response))
                     return item
@@ -133,6 +135,7 @@ class MongodbPipeline(object):
         # 保存爬取过的页面，去重
         coll = self.db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
         one_obj: Dict | None = coll.find_one(filter={'ulr': spider.current_url})
+        spider.logger.info('save spider.current_url is {}'.format(spider.current_url))
         if not one_obj:
             coll.insert_one({'ulr': spider.current_url})  # 向数据库插入一条记录
             self.count_pages += 1

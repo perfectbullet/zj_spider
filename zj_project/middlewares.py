@@ -4,6 +4,7 @@ from typing import Dict
 
 import pymongo
 from scrapy import signals
+from scrapy.exceptions import IgnoreRequest
 
 
 class ZjProjectSpiderMiddleware:
@@ -59,13 +60,26 @@ class ZjProjectSpiderMiddleware:
         coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
 
         for r in start_requests:
-            spider.logger.info("process_start_requests %s", r.url)
+            spider.logger.info("c %s", r.url)
             one_obj: Dict | None = coll.find_one(filter={'ulr': r.url})
             if not one_obj:
                 yield r
             else:
                 spider.logger.info("request.url %s, have been crawled", r.url)
                 continue
+
+    def process_request(self, request, spider):
+        coll = self.mongo_db['{}_crawled_urls'.format(spider.name)]  # 获得collection的句柄
+        current_url = request.url
+        spider.logger.info("request is %s", current_url)
+        one_obj: Dict | None = coll.find_one(filter={'ulr': current_url})
+        if not one_obj:
+            #  # 继续处理请求
+            return None
+        else:
+            # 忽略请求
+            spider.logger.info("request.url %s, have been crawled", current_url)
+            raise IgnoreRequest('{} have been crawled')
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
