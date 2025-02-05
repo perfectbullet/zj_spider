@@ -88,6 +88,9 @@ class SaveAirlineImage:
                     return item
                 except Exception as e:
                     spider.logger.error('SaveAirlineImage Exception is {}'.format(e))
+            if item['local_image_url']:
+                item['local_image'] = item['local_image_url'][0]
+
             return item
         else:
             item['image_filenames'] = []
